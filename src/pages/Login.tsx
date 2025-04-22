@@ -1,12 +1,12 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { LogIn } from "lucide-react";
+import { LogIn, UserPlus } from "lucide-react";
 
 type UserRole = "farmer" | "admin" | "buyer";
 
@@ -14,10 +14,29 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [farmerId, setFarmerId] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("farmer");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (selectedRole === "farmer") {
+      if (!farmerId) {
+        toast.error("Please enter your Farmer ID");
+        return;
+      }
+      
+      // For prototype: Check if farmer exists in localStorage
+      const farmer = localStorage.getItem(farmerId);
+      if (farmer) {
+        toast.success("Login successful!");
+        navigate("/farmer-dashboard");
+      } else {
+        toast.error("Invalid Farmer ID");
+      }
+      return;
+    }
+    
     if (!email || !password) {
       toast.error("Please fill in all fields");
       return;
@@ -25,9 +44,6 @@ const Login = () => {
     
     // For prototype, redirect based on role
     switch (selectedRole) {
-      case "farmer":
-        navigate("/farmer-dashboard");
-        break;
       case "admin":
         navigate("/admin-dashboard");
         break;
@@ -62,29 +78,52 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            {selectedRole === "farmer" ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="farmerId">Farmer ID</Label>
+                  <Input
+                    id="farmerId"
+                    type="text"
+                    placeholder="Enter your Farmer ID"
+                    value={farmerId}
+                    onChange={(e) => setFarmerId(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="text-center">
+                  <Link to="/farmer-registration" className="text-sm text-blue-600 hover:underline">
+                    New farmer? Register here
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </>
+            )}
 
             <Button type="submit" className="w-full">
               Login <LogIn className="ml-2 h-4 w-4" />
