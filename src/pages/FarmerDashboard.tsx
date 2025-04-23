@@ -1,29 +1,177 @@
 
+import { useEffect, useState } from "react";
 import WeatherForecast from "@/components/farming/WeatherForecast";
 import FarmerImageUpload from "@/components/farming/FarmerImageUpload";
 import FarmerQueryTicket from "@/components/farming/FarmerQueryTicket";
+import NewsFeed from "@/components/farming/NewsFeed";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LogOut, Home, TrendingUp, Leaf } from "lucide-react";
 
 const FarmerDashboard = () => {
+  const [userName, setUserName] = useState("Farmer");
+
+  // This would be replaced with actual auth in a real app
+  useEffect(() => {
+    const storedName = window.localStorage.getItem("currentFarmerName");
+    if (storedName) {
+      setUserName(storedName);
+    }
+  }, []);
+  
+  const myCrops = [
+    { 
+      id: "C1001", 
+      name: "Rice", 
+      harvestLocation: "Lakhimpur",
+      transportDestination: "Guwahati",
+      price: 2500,
+      status: "In Progress"
+    }
+  ];
+
   return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold mb-4">Farmer Dashboard</h1>
-      <WeatherForecast />
-      <div className="grid md:grid-cols-2 gap-6 mt-6">
-        <div>
-          <FarmerImageUpload />
+    <div className="min-h-screen bg-gradient-to-b from-agri-50 to-agri-100">
+      {/* Header */}
+      <header className="bg-agri-700 text-white py-4 shadow-md">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <Leaf className="h-6 w-6 mr-2" />
+              <h1 className="text-xl font-bold">AgriBridge NE</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="hidden md:inline-block text-sm text-agri-100">Welcome, {userName}</span>
+              <Link to="/login">
+                <Button size="sm" variant="outline" className="text-white border-agri-500 hover:bg-agri-600">
+                  <LogOut className="h-4 w-4 mr-1" /> Logout
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
-        <div>
-          <FarmerQueryTicket />
+      </header>
+
+      {/* Navigation */}
+      <nav className="bg-white shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex overflow-x-auto py-2">
+            <Link to="#" className="px-4 py-2 text-agri-600 font-medium flex items-center whitespace-nowrap">
+              <Home className="h-4 w-4 mr-2" /> Dashboard
+            </Link>
+            <Link to="#" className="px-4 py-2 text-gray-600 hover:text-agri-600 flex items-center whitespace-nowrap">
+              <Leaf className="h-4 w-4 mr-2" /> My Crops
+            </Link>
+            <Link to="#" className="px-4 py-2 text-gray-600 hover:text-agri-600 flex items-center whitespace-nowrap">
+              <TrendingUp className="h-4 w-4 mr-2" /> Market Prices
+            </Link>
+          </div>
         </div>
-      </div>
-      {/* Simulated Admin Query View - for demo purposes */}
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-2">Your Raised Queries (Admin View)</h2>
-        <ul className="list-disc pl-6 text-gray-800">
-          {(JSON.parse(window.localStorage.getItem("farmer_queries_demo") || "[]") as string[]).reverse().map((q, idx) => (
-            <li key={idx}>{q}</li>
-          ))}
-        </ul>
+      </nav>
+      
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold mb-6 text-agri-800">Farmer Dashboard</h1>
+        
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          <div className="md:col-span-2">
+            <WeatherForecast />
+          </div>
+          <div>
+            <Card className="h-full border-agri-200">
+              <CardHeader className="bg-earth-500 text-white py-3 px-4">
+                <CardTitle className="text-md flex items-center">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Market Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Rice</span>
+                    <span className="text-green-600 font-semibold">₹2,500/quintal</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Wheat</span>
+                    <span className="text-green-600 font-semibold">₹1,900/quintal</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Tea</span>
+                    <span className="text-red-600 font-semibold">₹145/kg ↓</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Ginger</span>
+                    <span className="text-green-600 font-semibold">₹80/kg ↑</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border-agri-200">
+              <CardHeader className="bg-agri-600 text-white py-3 px-4">
+                <CardTitle className="text-md flex items-center">
+                  <Leaf className="h-4 w-4 mr-2" />
+                  My Crops
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {myCrops.length === 0 ? (
+                  <div className="text-center p-8 text-gray-500">
+                    No crops allocated yet
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {myCrops.map(crop => (
+                      <div key={crop.id} className="bg-white p-4 rounded-lg border border-gray-200 hover:border-agri-300 transition-colors">
+                        <div className="flex justify-between">
+                          <h3 className="font-semibold text-agri-800">{crop.name}</h3>
+                          <span className="inline-block px-2 py-1 bg-agri-100 text-agri-700 rounded-full text-xs font-medium">
+                            {crop.status}
+                          </span>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600">
+                          <div className="flex flex-wrap gap-x-6 gap-y-1">
+                            <div>
+                              <span className="font-medium text-gray-700">ID:</span> {crop.id}
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Price:</span> ₹{crop.price}
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Harvest Location:</span> {crop.harvestLocation}
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Destination:</span> {crop.transportDestination}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex justify-end">
+                          <Button size="sm" variant="outline" className="text-agri-600 border-agri-300">
+                            Request Transport
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+            
+            <div className="grid sm:grid-cols-2 gap-6">
+              <FarmerImageUpload />
+              <FarmerQueryTicket />
+            </div>
+          </div>
+          
+          <div>
+            <NewsFeed />
+          </div>
+        </div>
       </div>
     </div>
   );
