@@ -23,7 +23,7 @@ interface CartItem extends Product {
 const FAKE_PRODUCTS: Product[] = [
   {
     id: 1,
-    name: "Boro Rice",
+    name: "Apple",
     desc: "High-yielding, water-tolerant rice variety perfect for NE India.",
     img: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=400&q=80",
     price: 32,
