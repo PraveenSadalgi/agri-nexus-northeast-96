@@ -4,22 +4,61 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { HelpCircle, Send } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
-const QUERY_KEY = "farmer_queries_demo";
+const QUERY_KEY = "queryTickets";
 
 const FarmerQueryTicket: React.FC = () => {
   const [query, setQuery] = useState("");
   const [queries, setQueries] = useState<string[]>(() =>
     JSON.parse(window.localStorage.getItem(QUERY_KEY) || "[]")
   );
+  const [farmerId, setFarmerId] = useState<string | null>(null);
+  const [territory, setTerritory] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get current farmer ID and territory
+    const storedId = window.localStorage.getItem("currentFarmerId");
+    if (storedId) {
+      setFarmerId(storedId);
+      const farmerData = window.localStorage.getItem(storedId);
+      if (farmerData) {
+        try {
+          const farmer = JSON.parse(farmerData);
+          setTerritory(farmer.territory || null);
+        } catch (e) {
+          console.error("Error parsing farmer data", e);
+        }
+      }
+    }
+  }, []);
 
   const handleRaiseQuery = () => {
     if (!query.trim()) return;
+    
+    // For demo: store the ticket in localStorage with farmer details
+    const ticketsJSON = window.localStorage.getItem("queryTickets");
+    const tickets = ticketsJSON ? JSON.parse(ticketsJSON) : [];
+    const newTicket = {
+      id: "Q" + Math.floor(1000 + Math.random() * 9000),
+      desc: query,
+      farmer: window.localStorage.getItem("currentFarmerName") || "Anonymous",
+      farmerId: farmerId || "Unknown",
+      territory: territory || "Unknown",
+      date: new Date().toISOString(),
+      status: "open",
+    };
+    tickets.push(newTicket);
+    window.localStorage.setItem("queryTickets", JSON.stringify(tickets));
+    
+    // Update local queries list for UI
     const updatedQueries = [...queries, query];
     setQueries(updatedQueries);
     window.localStorage.setItem(QUERY_KEY, JSON.stringify(updatedQueries));
+    
     setQuery("");
+    toast.success("Query ticket raised successfully!");
     setMessage("Query ticket raised successfully!");
     setTimeout(() => setMessage(null), 2000);
   };

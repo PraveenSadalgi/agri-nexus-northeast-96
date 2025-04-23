@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Farmer } from "@/types/admin";
@@ -6,10 +7,18 @@ import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { MapPin, Truck, Users, Check, X } from "lucide-react";
 
+interface QueryTicket {
+  id: string;
+  desc: string;
+  farmer: string;
+  farmerId?: string;
+  territory?: string;
+  date: string;
+  status: string;
+}
+
 const AdminDashboard = () => {
-  const [tickets, setTickets] = useState<
-    Array<{ id: string; desc: string; farmer: string; date: string; status: string }>
-  >([]);
+  const [tickets, setTickets] = useState<QueryTicket[]>([]);
   const [farmers, setFarmers] = useState<Farmer[]>([]);
   const [selectedFarmerId, setSelectedFarmerId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -114,7 +123,30 @@ const AdminDashboard = () => {
     
     // Add event listener for storage changes
     window.addEventListener('storage', loadFarmers);
-    return () => window.removeEventListener('storage', loadFarmers);
+    
+    // Listen for query ticket updates
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "queryTickets") {
+        const updatedTickets = event.newValue ? JSON.parse(event.newValue) : [];
+        setTickets(updatedTickets);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check for updates every few seconds (for demo purposes)
+    const interval = setInterval(() => {
+      const ticketList = window.localStorage.getItem("queryTickets");
+      if (ticketList) {
+        setTickets(JSON.parse(ticketList));
+      }
+    }, 5000);
+    
+    return () => {
+      window.removeEventListener('storage', loadFarmers);
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleAllocateClick = (farmerId: string) => {
@@ -322,6 +354,12 @@ const AdminDashboard = () => {
                       <span>Date: {new Date(ticket.date).toLocaleString()}</span>
                       {" · "}
                       <span>Farmer: <span className="font-semibold">{ticket.farmer}</span></span>
+                      {ticket.farmerId && 
+                        <> {" · "} <span>ID: <span className="font-semibold">{ticket.farmerId}</span></span></>
+                      }
+                      {ticket.territory && 
+                        <> {" · "} <span>Territory: <span className="font-semibold">{ticket.territory}</span></span></>
+                      }
                       {" · "}
                       <span>Status: <span className="capitalize">{ticket.status}</span></span>
                     </div>

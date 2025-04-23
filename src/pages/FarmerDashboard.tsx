@@ -8,28 +8,66 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, Home, TrendingUp, Leaf } from "lucide-react";
+import { CropAllocation } from "@/types/admin";
 
 const FarmerDashboard = () => {
   const [userName, setUserName] = useState("Farmer");
+  const [farmerId, setFarmerId] = useState<string | null>(null);
+  const [myCrops, setMyCrops] = useState<CropAllocation[]>([]);
 
-  // This would be replaced with actual auth in a real app
   useEffect(() => {
+    // Get current farmer details
     const storedName = window.localStorage.getItem("currentFarmerName");
+    const storedId = window.localStorage.getItem("currentFarmerId");
+    
     if (storedName) {
       setUserName(storedName);
     }
-  }, []);
-  
-  const myCrops = [
-    { 
-      id: "C1001", 
-      name: "Rice", 
-      harvestLocation: "Lakhimpur",
-      transportDestination: "Guwahati",
-      price: 2500,
-      status: "In Progress"
+    
+    if (storedId) {
+      setFarmerId(storedId);
+      
+      // Load farmer's allocated crops
+      const farmerData = window.localStorage.getItem(storedId);
+      if (farmerData) {
+        try {
+          const farmer = JSON.parse(farmerData);
+          if (farmer.allocatedCrops && Array.isArray(farmer.allocatedCrops)) {
+            setMyCrops(farmer.allocatedCrops);
+          }
+        } catch (e) {
+          console.error("Error parsing farmer data", e);
+        }
+      }
     }
-  ];
+  }, []);
+
+  // Listen for updates to the allocated crops
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (farmerId) {
+        const farmerData = window.localStorage.getItem(farmerId);
+        if (farmerData) {
+          try {
+            const farmer = JSON.parse(farmerData);
+            if (farmer.allocatedCrops && Array.isArray(farmer.allocatedCrops)) {
+              setMyCrops(farmer.allocatedCrops);
+            }
+          } catch (e) {
+            console.error("Error parsing farmer data", e);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    document.addEventListener('allocatedCropsUpdated', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      document.removeEventListener('allocatedCropsUpdated', handleStorageChange);
+    };
+  }, [farmerId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-agri-50 to-agri-100">
@@ -122,22 +160,40 @@ const FarmerDashboard = () => {
               <CardContent className="p-4">
                 {myCrops.length === 0 ? (
                   <div className="text-center p-8 text-gray-500">
-                    No crops allocated yet
+                    <p className="mb-2 font-medium">No crops allocated yet</p>
+                    <div className="bg-white p-4 rounded-lg border border-gray-200">
+                      <div className="flex justify-between">
+                        <h3 className="font-semibold text-agri-800">Crop</h3>
+                        <span className="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                          Not Allocated
+                        </span>
+                      </div>
+                      <div className="mt-2 text-sm text-gray-600">
+                        <div className="flex flex-wrap gap-x-6 gap-y-1">
+                          <div>
+                            <span className="font-medium text-gray-700">Status:</span> Waiting for allocation
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">Destination:</span> Not allocated
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {myCrops.map(crop => (
-                      <div key={crop.id} className="bg-white p-4 rounded-lg border border-gray-200 hover:border-agri-300 transition-colors">
+                      <div key={crop.cropId} className="bg-white p-4 rounded-lg border border-gray-200 hover:border-agri-300 transition-colors">
                         <div className="flex justify-between">
-                          <h3 className="font-semibold text-agri-800">{crop.name}</h3>
+                          <h3 className="font-semibold text-agri-800">{crop.cropName}</h3>
                           <span className="inline-block px-2 py-1 bg-agri-100 text-agri-700 rounded-full text-xs font-medium">
-                            {crop.status}
+                            Allocated
                           </span>
                         </div>
                         <div className="mt-2 text-sm text-gray-600">
                           <div className="flex flex-wrap gap-x-6 gap-y-1">
                             <div>
-                              <span className="font-medium text-gray-700">ID:</span> {crop.id}
+                              <span className="font-medium text-gray-700">ID:</span> {crop.cropId}
                             </div>
                             <div>
                               <span className="font-medium text-gray-700">Price:</span> ₹{crop.price}
