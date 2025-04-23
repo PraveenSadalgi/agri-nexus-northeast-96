@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Farmer } from "@/types/admin";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { MapPin, Truck, Users, Check, X } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface QueryTicket {
   id: string;
@@ -29,7 +29,6 @@ const AdminDashboard = () => {
     Array<{ id: string; userId: string; userName: string; action: string; timestamp: string }>
   >([]);
 
-  // Generate some demo transport requests
   useEffect(() => {
     const demoRequests = [
       {
@@ -65,7 +64,6 @@ const AdminDashboard = () => {
     ];
     setTransportRequests(demoRequests);
     
-    // Generate demo access logs
     const demoLogs = [
       {
         id: "AL1001",
@@ -93,13 +91,11 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
-    // Retrieve query tickets from localStorage
     const ticketList = window.localStorage.getItem("queryTickets");
     if (ticketList) {
       setTickets(JSON.parse(ticketList));
     }
     
-    // Load farmers data
     const loadFarmers = () => {
       const storedFarmers: Farmer[] = [];
       for (let i = 0; i < localStorage.length; i++) {
@@ -121,10 +117,8 @@ const AdminDashboard = () => {
     
     loadFarmers();
     
-    // Add event listener for storage changes
     window.addEventListener('storage', loadFarmers);
     
-    // Listen for query ticket updates
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === "queryTickets") {
         const updatedTickets = event.newValue ? JSON.parse(event.newValue) : [];
@@ -134,7 +128,6 @@ const AdminDashboard = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Check for updates every few seconds (for demo purposes)
     const interval = setInterval(() => {
       const ticketList = window.localStorage.getItem("queryTickets");
       if (ticketList) {
@@ -155,7 +148,6 @@ const AdminDashboard = () => {
   };
 
   const handleAfterAllocate = () => {
-    // Refresh farmers data
     const updatedFarmers = [...farmers];
     if (selectedFarmerId) {
       const farmerJSON = window.localStorage.getItem(selectedFarmerId);
@@ -174,6 +166,21 @@ const AdminDashboard = () => {
     setTransportRequests(prev => prev.map(req => 
       req.id === id ? { ...req, status } : req
     ));
+  };
+
+  const handleDeallocateCrop = (farmerId: string, cropId: string) => {
+    const farmerJSON = window.localStorage.getItem(farmerId);
+    if (farmerJSON) {
+      const farmer = JSON.parse(farmerJSON);
+      farmer.allocatedCrops = farmer.allocatedCrops.filter((crop: any) => crop.cropId !== cropId);
+      window.localStorage.setItem(farmerId, JSON.stringify(farmer));
+      
+      setFarmers(prev => prev.map(f => 
+        f.id === farmerId ? farmer : f
+      ));
+      
+      toast.success("Crop deallocated successfully");
+    }
   };
 
   return (
@@ -240,8 +247,18 @@ const AdminDashboard = () => {
                       <p className="font-medium mb-1">Allocated Crops:</p>
                       <ul className="list-disc pl-5 space-y-1">
                         {farmer.allocatedCrops.map(crop => (
-                          <li key={crop.cropId}>
-                            {crop.cropName} - {crop.harvestLocation} → {crop.transportDestination} (₹{crop.price}/kg)
+                          <li key={crop.cropId} className="flex items-center justify-between">
+                            <span>
+                              {crop.cropName} - {crop.harvestLocation} → {crop.transportDestination} (₹{crop.price}/kg)
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeallocateCrop(farmer.id, crop.cropId)}
+                            >
+                              Deallocate
+                            </Button>
                           </li>
                         ))}
                       </ul>
@@ -350,20 +367,21 @@ const AdminDashboard = () => {
               <div className="space-y-4">
                 {tickets.map(ticket => (
                   <div key={ticket.id} className="border rounded p-2">
-                    <div className="text-sm text-gray-500">
-                      <span>Date: {new Date(ticket.date).toLocaleString()}</span>
-                      {" · "}
-                      <span>Farmer: <span className="font-semibold">{ticket.farmer}</span></span>
-                      {ticket.farmerId && 
-                        <> {" · "} <span>ID: <span className="font-semibold">{ticket.farmerId}</span></span></>
-                      }
-                      {ticket.territory && 
-                        <> {" · "} <span>Territory: <span className="font-semibold">{ticket.territory}</span></span></>
-                      }
-                      {" · "}
-                      <span>Status: <span className="capitalize">{ticket.status}</span></span>
+                    <div className="text-sm text-gray-500 space-y-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p><span className="font-medium">Date:</span> {new Date(ticket.date).toLocaleString()}</p>
+                          <p><span className="font-medium">Farmer:</span> {ticket.farmer}</p>
+                          {ticket.farmerId && <p><span className="font-medium">Farmer ID:</span> {ticket.farmerId}</p>}
+                          {ticket.territory && <p><span className="font-medium">Territory:</span> {ticket.territory}</p>}
+                          <p><span className="font-medium">Status:</span> <span className="capitalize">{ticket.status}</span></p>
+                        </div>
+                      </div>
+                      <div className="mt-2 p-2 bg-gray-50 rounded">
+                        <p className="font-medium text-gray-700">Query:</p>
+                        <p className="text-gray-600">{ticket.desc}</p>
+                      </div>
                     </div>
-                    <div className="mt-1 font-medium">{ticket.desc}</div>
                   </div>
                 ))}
               </div>

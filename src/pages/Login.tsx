@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,18 +38,14 @@ const Login = () => {
     }
     
     if (selectedRole === "farmer") {
-      // Simple validation for farmer login
       const farmerId = username;
       
-      // For demo purposes, allow login with any farmer name and password "farmer"
       if (password === "farmer") {
-        // Check if there's already a registered farmer with this ID
         const farmerData = window.localStorage.getItem(farmerId);
         
         if (farmerData) {
           try {
             const farmer = JSON.parse(farmerData);
-            // Store the farmer name and ID for use in dashboard
             window.localStorage.setItem("currentFarmerName", farmer.name);
             window.localStorage.setItem("currentFarmerId", farmerId);
             
@@ -240,7 +235,7 @@ const Login = () => {
                 </div>
                 <div className="bg-gray-50 p-2 rounded">
                   <p className="font-medium">Admin</p>
-                  <p>Email: admin</p>
+                  <p>Email: admin@gmail.com</p>
                   <p>Password: admin</p>
                 </div>
                 <div className="bg-gray-50 p-2 rounded">

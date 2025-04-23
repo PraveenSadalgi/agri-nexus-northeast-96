@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { HelpCircle, Send } from "lucide-react";
+import { HelpCircle, Send, Copy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -18,7 +17,6 @@ const FarmerQueryTicket: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get current farmer ID and territory
     const storedId = window.localStorage.getItem("currentFarmerId");
     if (storedId) {
       setFarmerId(storedId);
@@ -37,7 +35,6 @@ const FarmerQueryTicket: React.FC = () => {
   const handleRaiseQuery = () => {
     if (!query.trim()) return;
     
-    // For demo: store the ticket in localStorage with farmer details
     const ticketsJSON = window.localStorage.getItem("queryTickets");
     const tickets = ticketsJSON ? JSON.parse(ticketsJSON) : [];
     const newTicket = {
@@ -52,7 +49,6 @@ const FarmerQueryTicket: React.FC = () => {
     tickets.push(newTicket);
     window.localStorage.setItem("queryTickets", JSON.stringify(tickets));
     
-    // Update local queries list for UI
     const updatedQueries = [...queries, query];
     setQueries(updatedQueries);
     window.localStorage.setItem(QUERY_KEY, JSON.stringify(updatedQueries));
@@ -63,12 +59,32 @@ const FarmerQueryTicket: React.FC = () => {
     setTimeout(() => setMessage(null), 2000);
   };
 
+  const handleCopyId = () => {
+    if (farmerId) {
+      navigator.clipboard.writeText(farmerId);
+      toast.success("Farmer ID copied to clipboard!");
+    }
+  };
+
   return (
     <Card className="border-agri-200">
       <CardHeader className="bg-agri-600 text-white py-3 px-4">
-        <CardTitle className="text-md flex items-center">
-          <HelpCircle className="h-4 w-4 mr-2" />
-          Raise Query Ticket
+        <CardTitle className="text-md flex items-center justify-between">
+          <div className="flex items-center">
+            <HelpCircle className="h-4 w-4 mr-2" />
+            Raise Query Ticket
+          </div>
+          {farmerId && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:text-white/90"
+              onClick={handleCopyId}
+            >
+              <Copy className="h-4 w-4 mr-1" />
+              Copy ID
+            </Button>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
