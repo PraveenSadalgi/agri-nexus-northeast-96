@@ -1,11 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Farmer } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { MapPin, TruckFront, Users, Check, X } from "lucide-react";
+import { MapPin, Truck, Users, Check, X } from "lucide-react";
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState<
@@ -93,68 +92,6 @@ const AdminDashboard = () => {
     
     // Load farmers data
     const loadFarmers = () => {
-      // Demo data for farmers
-      const demoFarmers: Farmer[] = [
-        {
-          id: "F1001",
-          name: "Rajesh Kumar",
-          territory: "Tamil Nadu",
-          allocatedCrops: [
-            {
-              cropId: "C1001",
-              cropName: "Rice",
-              harvestLocation: "Thanjavur",
-              transportDestination: "Chennai",
-              price: 2500
-            }
-          ]
-        },
-        {
-          id: "F1002",
-          name: "Anand Singh",
-          territory: "Punjab",
-          allocatedCrops: [
-            {
-              cropId: "C1002",
-              cropName: "Wheat",
-              harvestLocation: "Amritsar",
-              transportDestination: "Delhi",
-              price: 1800
-            }
-          ]
-        },
-        {
-          id: "F1003",
-          name: "Lakshmi Devi",
-          territory: "Maharashtra",
-          allocatedCrops: [
-            {
-              cropId: "C1003",
-              cropName: "Cotton",
-              harvestLocation: "Nagpur",
-              transportDestination: "Mumbai",
-              price: 3200
-            },
-            {
-              cropId: "C1004",
-              cropName: "Soybeans",
-              harvestLocation: "Pune",
-              transportDestination: "Mumbai",
-              price: 2800
-            }
-          ]
-        }
-      ];
-
-      // Store farmers in local storage
-      demoFarmers.forEach(farmer => {
-        const existingFarmer = window.localStorage.getItem(farmer.id);
-        if (!existingFarmer) {
-          window.localStorage.setItem(farmer.id, JSON.stringify(farmer));
-        }
-      });
-
-      // Get all farmers from localStorage
       const storedFarmers: Farmer[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -170,11 +107,14 @@ const AdminDashboard = () => {
           }
         }
       }
-      
-      setFarmers(storedFarmers.length ? storedFarmers : demoFarmers);
+      setFarmers(storedFarmers);
     };
     
     loadFarmers();
+    
+    // Add event listener for storage changes
+    window.addEventListener('storage', loadFarmers);
+    return () => window.removeEventListener('storage', loadFarmers);
   }, []);
 
   const handleAllocateClick = (farmerId: string) => {
@@ -286,7 +226,7 @@ const AdminDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <TruckFront className="mr-2" /> 
+              <Truck className="mr-2" /> 
               Approve Transport and Monitor Access
             </CardTitle>
           </CardHeader>

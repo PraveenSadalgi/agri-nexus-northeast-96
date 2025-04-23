@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { UserPlus, ChevronLeft, Leaf } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Farmer } from "@/types/admin";
 
 const FarmerRegistration = () => {
   const navigate = useNavigate();
@@ -35,18 +35,17 @@ const FarmerRegistration = () => {
       return;
     }
 
-    // For prototype: Generate a simple farmer ID
     const farmerId = `F${Math.floor(Math.random() * 10000)}`;
     
-    // In a real app, this would be saved to a database
-    // For now, just show success and store in localStorage
-    localStorage.setItem(farmerId, JSON.stringify({
+    const newFarmer: Farmer = {
       id: farmerId,
       name,
-      email,
       territory,
       allocatedCrops: []
-    }));
+    };
+    
+    localStorage.setItem(farmerId, JSON.stringify(newFarmer));
+    window.dispatchEvent(new Event('storage'));
 
     toast.success(`Registration successful! Your Farmer ID is: ${farmerId}`);
     navigate("/login");
