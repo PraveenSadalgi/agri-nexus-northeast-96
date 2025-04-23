@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -52,24 +53,26 @@ const FarmerRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-agri-50 to-agri-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIj48cGF0aCBkPSJNMzYgMzRjMCAxLjEtLjkgMi0yIDJzLTItLjktMi0yIC45LTIgMi0yIDIgLjkgMiAyem0tOCAwYzAgMS4xLS45IDItMiAyczItLjkgMi0yLS45LTItMi0yLTIgLjktMiAyem0tOCAwYzAgMS4xLS45IDItMiAycy0yLS45LTItMiAuOS0yIDItMiAyIC45IDIgMnoiIHN0cm9rZT0iIzQ0NCIvPjxwYXRoIGQ9Ik00NCAyNGMwIDEuMS0uOSAyLTIgMnMtMi0uOS0yLTIgLjktMiAyLTIgMiAuOSAyIDJ6bS04IDBjMCAxLjEtLjkgMi0yIDJzLTItLjktMi0yIC45LTIgMi0yIDIgLjkgMiAyem0tOCAwYzAgMS4xLS45IDItMiAycy0yLS45LTItMiAuOS0yIDItMiAyIC45IDIgMnptLTggMGMwIDEuMS0uOSAyLTIgMnMtMi0uOS0yLTIgLjktMiAyLTIgMiAuOSAyIDJ6bTI0LThjMCAxLjEtLjkgMi0yIDJzLTItLjktMi0yIC45LTIgMi0yIDIgLjkgMiAyem0tOCAwYzAgMS4xLS45IDItMiAycy0yLS45LTItMiAuOS0yIDItMiAyIC45IDIgMnptLTggMGMwIDEuMS0uOSAyLTIgMnMtMi0uOS0yLTIgLjktMiAyLTIgMiAuOSAyIDJ6bS04IDBjMCAxLjEtLjkgMi0yIDJzLTItLjktMi0yIC45LTIgMi0yIDIgLjkgMiAyeiIgZmlsbC1vcGFjaXR5PSIuMyIgZmlsbD0iIzQ0NCIvPjwvZz48L3N2Zz4=')] bg-agri-50/95 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link to="/login" className="inline-flex items-center text-agri-600 hover:text-agri-700 mb-6">
+        <Link to="/login" className="inline-flex items-center text-agri-600 hover:text-agri-700 mb-6 transition-colors">
           <ChevronLeft className="h-4 w-4 mr-1" /> Back to Login
         </Link>
         
-        <Card className="border-agri-200 shadow-lg">
-          <CardHeader className="text-center pb-6">
-            <div className="w-16 h-16 rounded-full bg-agri-100 text-agri-600 flex items-center justify-center mx-auto mb-4">
+        <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-xl">
+          <CardHeader className="text-center space-y-2">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-agri-100 to-agri-200 text-agri-600 flex items-center justify-center mx-auto">
               <Leaf className="h-8 w-8" />
             </div>
-            <CardTitle className="text-2xl font-bold text-agri-800">Farmer Registration</CardTitle>
-            <CardDescription>Join the AgriBridge NE community</CardDescription>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-br from-agri-800 to-agri-600 bg-clip-text text-transparent">
+              Farmer Registration
+            </CardTitle>
+            <CardDescription className="text-agri-600">Join the AgriBridge NE community</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-700">Full Name <span className="text-red-500">*</span></Label>
+                <Label htmlFor="name" className="text-agri-700">Full Name <span className="text-red-500">*</span></Label>
                 <Input
                   id="name"
                   type="text"
@@ -77,12 +80,12 @@ const FarmerRegistration = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="border-gray-300 focus:border-agri-500 focus:ring-agri-500"
+                  className="border-agri-200 focus:border-agri-500 focus:ring-agri-500 bg-white/50"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700">Email <span className="text-red-500">*</span></Label>
+                <Label htmlFor="email" className="text-agri-700">Email <span className="text-red-500">*</span></Label>
                 <Input
                   id="email"
                   type="email"
@@ -90,13 +93,13 @@ const FarmerRegistration = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="border-gray-300 focus:border-agri-500 focus:ring-agri-500"
+                  className="border-agri-200 focus:border-agri-500 focus:ring-agri-500 bg-white/50"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700">Password <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="password" className="text-agri-700">Password <span className="text-red-500">*</span></Label>
                   <Input
                     id="password"
                     type="password"
@@ -104,12 +107,12 @@ const FarmerRegistration = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="border-gray-300 focus:border-agri-500 focus:ring-agri-500"
+                    className="border-agri-200 focus:border-agri-500 focus:ring-agri-500 bg-white/50"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="confirmPassword" className="text-agri-700">Confirm Password <span className="text-red-500">*</span></Label>
                   <Input
                     id="confirmPassword"
                     type="password"
@@ -117,15 +120,15 @@ const FarmerRegistration = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="border-gray-300 focus:border-agri-500 focus:ring-agri-500"
+                    className="border-agri-200 focus:border-agri-500 focus:ring-agri-500 bg-white/50"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="territory" className="text-gray-700">Territory <span className="text-red-500">*</span></Label>
+                <Label htmlFor="territory" className="text-agri-700">Territory <span className="text-red-500">*</span></Label>
                 <Select value={territory} onValueChange={setTerritory} required>
-                  <SelectTrigger className="w-full border-gray-300 focus:border-agri-500 focus:ring-agri-500">
+                  <SelectTrigger className="w-full border-agri-200 focus:border-agri-500 focus:ring-agri-500 bg-white/50">
                     <SelectValue placeholder="Select your territory" />
                   </SelectTrigger>
                   <SelectContent>
@@ -139,14 +142,17 @@ const FarmerRegistration = () => {
               </div>
 
               <div className="pt-4">
-                <Button type="submit" className="w-full btn-agri">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-agri-600 to-agri-700 hover:from-agri-700 hover:to-agri-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                >
                   Register as Farmer <UserPlus className="ml-2 h-4 w-4" />
                 </Button>
               </div>
 
-              <div className="text-center text-sm text-gray-600 mt-4">
+              <div className="text-center text-sm text-agri-600 mt-4">
                 Already have an account?{" "}
-                <Link to="/login" className="text-agri-600 hover:text-agri-700 hover:underline">
+                <Link to="/login" className="text-agri-700 hover:text-agri-800 hover:underline font-medium">
                   Sign in here
                 </Link>
               </div>
