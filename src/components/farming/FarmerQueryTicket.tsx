@@ -6,7 +6,7 @@ import {
   HelpCircle, 
   Send, 
   Copy 
-} from "lucide-react";  // Explicitly import all used icons
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 

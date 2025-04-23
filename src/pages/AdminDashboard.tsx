@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Farmer } from "@/types/admin";
@@ -15,7 +14,7 @@ import {
   Home, 
   TrendingUp, 
   Leaf 
-} from "lucide-react";  // Explicitly import all used icons
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface QueryTicket {

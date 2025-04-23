@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import WeatherForecast from "@/components/farming/WeatherForecast";
 import FarmerImageUpload from "@/components/farming/FarmerImageUpload";
@@ -12,7 +11,7 @@ import {
   Home, 
   TrendingUp, 
   Leaf 
-} from "lucide-react";  // Explicitly import all used icons
+} from "lucide-react";
 import { CropAllocation } from "@/types/admin";
 
 const FarmerDashboard = () => {
@@ -21,7 +20,6 @@ const FarmerDashboard = () => {
   const [myCrops, setMyCrops] = useState<CropAllocation[]>([]);
 
   useEffect(() => {
-    // Get current farmer details
     const storedName = window.localStorage.getItem("currentFarmerName");
     const storedId = window.localStorage.getItem("currentFarmerId");
     
@@ -32,7 +30,6 @@ const FarmerDashboard = () => {
     if (storedId) {
       setFarmerId(storedId);
       
-      // Load farmer's allocated crops
       const farmerData = window.localStorage.getItem(storedId);
       if (farmerData) {
         try {
@@ -47,7 +44,6 @@ const FarmerDashboard = () => {
     }
   }, []);
 
-  // Listen for updates to the allocated crops
   useEffect(() => {
     const handleStorageChange = () => {
       if (farmerId) {
@@ -76,7 +72,6 @@ const FarmerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-agri-50 to-agri-100">
-      {/* Header */}
       <header className="bg-agri-700 text-white py-4 shadow-md">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
@@ -96,7 +91,6 @@ const FarmerDashboard = () => {
         </div>
       </header>
 
-      {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex overflow-x-auto py-2">
@@ -113,7 +107,6 @@ const FarmerDashboard = () => {
         </div>
       </nav>
       
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6 text-agri-800">Farmer Dashboard</h1>
         
