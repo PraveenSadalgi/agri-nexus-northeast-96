@@ -5,7 +5,7 @@ import { Farmer } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { MapPin, TruckFront, Users, Check, X } from "lucide-react";
+import { MapPin, Truck, Users, Check, X } from "lucide-react";
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState<
@@ -286,7 +286,7 @@ const AdminDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <TruckFront className="mr-2" /> 
+              <Truck className="mr-2" /> 
               Approve Transport and Monitor Access
             </CardTitle>
           </CardHeader>
