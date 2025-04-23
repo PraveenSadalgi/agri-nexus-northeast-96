@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -46,6 +47,7 @@ const FarmerQueryTicket: React.FC = () => {
       date: new Date().toISOString(),
       status: "open",
     };
+    
     tickets.push(newTicket);
     window.localStorage.setItem("queryTickets", JSON.stringify(tickets));
     
@@ -135,3 +137,4 @@ const FarmerQueryTicket: React.FC = () => {
 };
 
 export default FarmerQueryTicket;
+

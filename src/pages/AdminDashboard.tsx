@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { MapPin, Truck, Users, Check, X } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 interface QueryTicket {
   id: string;
@@ -359,27 +359,48 @@ const AdminDashboard = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle>New Query Tickets</CardTitle>
+            <CardTitle>Query Tickets</CardTitle>
           </CardHeader>
           <CardContent>
             {tickets.length === 0 && <p className="text-gray-600">No query tickets yet.</p>}
             {tickets.length > 0 &&
               <div className="space-y-4">
-                {tickets.map(ticket => (
-                  <div key={ticket.id} className="border rounded p-2">
-                    <div className="text-sm text-gray-500 space-y-1">
+                {tickets.slice().reverse().map(ticket => (
+                  <div key={ticket.id} className="border rounded p-3 bg-white shadow-sm">
+                    <div className="text-sm space-y-2">
                       <div className="flex justify-between items-start">
-                        <div>
-                          <p><span className="font-medium">Date:</span> {new Date(ticket.date).toLocaleString()}</p>
-                          <p><span className="font-medium">Farmer:</span> {ticket.farmer}</p>
-                          {ticket.farmerId && <p><span className="font-medium">Farmer ID:</span> {ticket.farmerId}</p>}
-                          {ticket.territory && <p><span className="font-medium">Territory:</span> {ticket.territory}</p>}
-                          <p><span className="font-medium">Status:</span> <span className="capitalize">{ticket.status}</span></p>
+                        <div className="space-y-1">
+                          <p className="text-gray-900">
+                            <span className="font-semibold">Ticket ID:</span> {ticket.id}
+                          </p>
+                          <p className="text-gray-900">
+                            <span className="font-semibold">Farmer:</span> {ticket.farmer}
+                          </p>
+                          <p className="text-gray-900">
+                            <span className="font-semibold">Farmer ID:</span> {ticket.farmerId}
+                          </p>
+                          <p className="text-gray-900">
+                            <span className="font-semibold">Territory:</span> {ticket.territory}
+                          </p>
+                          <p className="text-gray-900">
+                            <span className="font-semibold">Date:</span>{' '}
+                            {new Date(ticket.date).toLocaleString()}
+                          </p>
+                          <p className="text-gray-900">
+                            <span className="font-semibold">Status:</span>{' '}
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${
+                              ticket.status === 'open' 
+                                ? 'bg-yellow-100 text-yellow-800' 
+                                : 'bg-green-100 text-green-800'
+                            }`}>
+                              {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+                            </span>
+                          </p>
                         </div>
                       </div>
-                      <div className="mt-2 p-2 bg-gray-50 rounded">
-                        <p className="font-medium text-gray-700">Query:</p>
-                        <p className="text-gray-600">{ticket.desc}</p>
+                      <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                        <p className="font-medium text-gray-900 mb-1">Query:</p>
+                        <p className="text-gray-700">{ticket.desc}</p>
                       </div>
                     </div>
                   </div>
