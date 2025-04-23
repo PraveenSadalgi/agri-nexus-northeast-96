@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,7 +8,8 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { Users, Map, MapPin, Truck } from "lucide-react";
+import { Users, Map, MapPin, Truck, SquarePlus } from "lucide-react";
+import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 
 // Temporary mock data for admins
 const MY_ADMIN_ID = "ADM001";
@@ -72,6 +72,8 @@ const AdminDashboard = () => {
   const [territory] = useState(MY_TERRITORY);
   const [adminId] = useState(MY_ADMIN_ID);
   const [registeredFarmers, setRegisteredFarmers] = useState<any[]>([]);
+  const [allocateOpen, setAllocateOpen] = useState(false);
+  const [selectedFarmerId, setSelectedFarmerId] = useState<string | null>(null);
 
   useEffect(() => {
     const farmers = getAllFarmers();
@@ -194,6 +196,7 @@ const AdminDashboard = () => {
                 <TableHead>Harvest Location</TableHead>
                 <TableHead>Transport To</TableHead>
                 <TableHead>Price (₹/kg)</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -210,6 +213,21 @@ const AdminDashboard = () => {
                       <TableCell>
                         {crop && crop.price ? <>₹{crop.price}</> : <span className="italic text-muted-foreground">-</span>}
                       </TableCell>
+                      {idx === 0 && (
+                        <TableCell rowSpan={farmer.allocatedCrops && farmer.allocatedCrops.length > 0 ? farmer.allocatedCrops.length : 1} className="align-top">
+                          <button
+                            title="Allocate Crop"
+                            className="p-2 rounded bg-green-100 hover:bg-green-200 border border-green-400 mb-2 flex items-center"
+                            onClick={() => {
+                              setSelectedFarmerId(farmer.id);
+                              setAllocateOpen(true);
+                            }}
+                          >
+                            <SquarePlus className="w-4 h-4 mr-1" />
+                            <span className="text-xs">Allocate</span>
+                          </button>
+                        </TableCell>
+                      )}
                     </TableRow>
                   )
                 )
@@ -218,6 +236,16 @@ const AdminDashboard = () => {
           </Table>
         </CardContent>
       </Card>
+      <AllocateCropDialog
+        open={allocateOpen}
+        onOpenChange={setAllocateOpen}
+        farmerId={selectedFarmerId}
+        onAllocate={() => {
+          // reload farmer state from localStorage
+          const farmers = getAllFarmers();
+          setRegisteredFarmers(farmers);
+        }}
+      />
     </div>
   );
 };
