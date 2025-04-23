@@ -41,15 +41,21 @@ const Login = () => {
       toast.error("Please fill in all fields");
       return;
     }
-    
-    // For prototype, redirect based on role
-    switch (selectedRole) {
-      case "admin":
+
+    // Handle admin login
+    if (selectedRole === "admin") {
+      if (email === "admin@gmail.com" && password === "admin") {
+        toast.success("Admin login successful!");
         navigate("/admin-dashboard");
-        break;
-      case "buyer":
-        navigate("/buyer-dashboard");
-        break;
+      } else {
+        toast.error("Invalid admin credentials");
+      }
+      return;
+    }
+    
+    // Handle buyer login - for now just redirect
+    if (selectedRole === "buyer") {
+      navigate("/buyer-dashboard");
     }
   };
 
