@@ -1,251 +1,56 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import { Users, Map, MapPin, Truck, SquarePlus } from "lucide-react";
-import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
-
-// Temporary mock data for admins
-const MY_ADMIN_ID = "ADM001";
-const MY_TERRITORY = "Assam-North";
-
-// Helper to get all farmers from localStorage
-function getAllFarmers() {
-  const farmers: any[] = [];
-  for (let i = 0; i < window.localStorage.length; i++) {
-    const key = window.localStorage.key(i);
-    if (key && key.startsWith("F")) {
-      try {
-        const farmer = JSON.parse(window.localStorage.getItem(key) || "");
-        // Only count farmers with a valid structure
-        if (farmer && farmer.id && farmer.name) {
-          farmers.push(farmer);
-        }
-      } catch {
-        // Ignore non-JSON/storage corruption
-      }
-    }
-  }
-  return farmers;
-}
-
-// Example crops (from before)
-const mockFarmers = [
-  {
-    id: "F001",
-    name: "Rajesh Kumar",
-    territory: "Assam-North",
-    allocatedCrops: [
-      {
-        cropId: "C001",
-        cropName: "Tea",
-        harvestLocation: "Dibrugarh",
-        transportDestination: "Guwahati",
-        price: 150,
-      },
-    ],
-  },
-  {
-    id: "F002",
-    name: "Mira Devi",
-    territory: "Assam-South",
-    allocatedCrops: [
-      {
-        cropId: "C002",
-        cropName: "Rice",
-        harvestLocation: "Silchar",
-        transportDestination: "Shillong",
-        price: 35,
-      },
-    ],
-  },
-];
+import React, { useEffect, useState } from "react";
 
 const AdminDashboard = () => {
-  // This would come from admin login in a real app
-  const [territory] = useState(MY_TERRITORY);
-  const [adminId] = useState(MY_ADMIN_ID);
-  const [registeredFarmers, setRegisteredFarmers] = useState<any[]>([]);
-  const [allocateOpen, setAllocateOpen] = useState(false);
-  const [selectedFarmerId, setSelectedFarmerId] = useState<string | null>(null);
+  const [tickets, setTickets] = useState<
+    Array<{ id: string; desc: string; farmer: string; date: string; status: string }>
+  >([]);
 
   useEffect(() => {
-    const farmers = getAllFarmers();
-    setRegisteredFarmers(farmers);
+    // Retrieve query tickets from localStorage
+    const ticketList = window.localStorage.getItem("queryTickets");
+    if (ticketList) {
+      setTickets(JSON.parse(ticketList));
+    }
   }, []);
 
-  // Combine live registered farmers with mock farmers
-  const allFarmers = [...mockFarmers];
-  // Add any new registered farmers not already in mockFarmers
-  registeredFarmers.forEach((rf) => {
-    if (!allFarmers.find((f) => f.id === rf.id)) {
-      allFarmers.push(rf);
-    }
-  });
-
-  // Calculate average crop price for this territory
-  const cropsInTerritory = allFarmers
-    .filter((f) => f.territory === territory)
-    .flatMap((f) => f.allocatedCrops || []);
-  const avgPrice =
-    cropsInTerritory.length > 0
-      ? (cropsInTerritory.reduce((sum, c) => sum + (c.price || 0), 0) /
-          cropsInTerritory.length
-        ).toFixed(0)
-      : "N/A";
-
-  // Count harvest and transport locations (unique for demo)
-  const allHarvest = [
-    ...new Set(
-      allFarmers
-        .flatMap((f) => (f.allocatedCrops ? f.allocatedCrops.map((c: any) => c.harvestLocation) : []))
-        .filter(Boolean)
-    ),
-  ];
-  const allTransport = [
-    ...new Set(
-      allFarmers
-        .flatMap((f) => (f.allocatedCrops ? f.allocatedCrops.map((c: any) => c.transportDestination) : []))
-        .filter(Boolean)
-    ),
-  ];
-
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-      <p className="text-gray-600">
-        Territory: {territory} | Admin ID: {adminId}
-      </p>
-
-      {/* Stats Overview */}
-      <div className="grid md:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Farmers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>New Query Tickets</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{allFarmers.length}</div>
+            {tickets.length === 0 && <p className="text-gray-600">No query tickets yet.</p>}
+            {tickets.length > 0 &&
+              <div className="space-y-4">
+                {tickets.map(ticket => (
+                  <div key={ticket.id} className="border rounded p-2">
+                    <div className="text-sm text-gray-500">
+                      <span>Date: {new Date(ticket.date).toLocaleString()}</span>
+                      {" · "}
+                      <span>Farmer: <span className="font-semibold">{ticket.farmer}</span></span>
+                      {" · "}
+                      <span>Status: <span className="capitalize">{ticket.status}</span></span>
+                    </div>
+                    <div className="mt-1 font-medium">{ticket.desc}</div>
+                  </div>
+                ))}
+              </div>
+            }
           </CardContent>
         </Card>
-
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Territories</CardTitle>
-            <Map className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>Farmer Management</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {[...new Set(allFarmers.map((f) => f.territory))].length}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Harvest Locations</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{allHarvest.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Transports</CardTitle>
-            <Truck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{allTransport.length}</div>
+            <p className="text-gray-600">Manage farmers and their allocations here.</p>
           </CardContent>
         </Card>
       </div>
-
-      {/* Average Crop Price in territory */}
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>
-            Average Crop Price in <span className="font-semibold">{territory}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <span className="text-2xl font-bold">₹{avgPrice}</span>
-        </CardContent>
-      </Card>
-
-      {/* Farmers and Crops Table */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Farmers and Allocated Crops</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Farmer ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Territory</TableHead>
-                <TableHead>Crop</TableHead>
-                <TableHead>Harvest Location</TableHead>
-                <TableHead>Transport To</TableHead>
-                <TableHead>Price (₹/kg)</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {allFarmers.map((farmer) =>
-                (farmer.allocatedCrops && farmer.allocatedCrops.length > 0 ? farmer.allocatedCrops : [null]).map(
-                  (crop: any, idx: number) => (
-                    <TableRow key={`${farmer.id}-${idx}`}>
-                      <TableCell>{farmer.id}</TableCell>
-                      <TableCell>{farmer.name}</TableCell>
-                      <TableCell>{farmer.territory}</TableCell>
-                      <TableCell>{crop ? crop.cropName : <span className="italic text-muted-foreground">-</span>}</TableCell>
-                      <TableCell>{crop ? crop.harvestLocation : <span className="italic text-muted-foreground">-</span>}</TableCell>
-                      <TableCell>{crop ? crop.transportDestination : <span className="italic text-muted-foreground">-</span>}</TableCell>
-                      <TableCell>
-                        {crop && crop.price ? <>₹{crop.price}</> : <span className="italic text-muted-foreground">-</span>}
-                      </TableCell>
-                      {idx === 0 && (
-                        <TableCell rowSpan={farmer.allocatedCrops && farmer.allocatedCrops.length > 0 ? farmer.allocatedCrops.length : 1} className="align-top">
-                          <button
-                            title="Allocate Crop"
-                            className="p-2 rounded bg-green-100 hover:bg-green-200 border border-green-400 mb-2 flex items-center"
-                            onClick={() => {
-                              setSelectedFarmerId(farmer.id);
-                              setAllocateOpen(true);
-                            }}
-                          >
-                            <SquarePlus className="w-4 h-4 mr-1" />
-                            <span className="text-xs">Allocate</span>
-                          </button>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  )
-                )
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <AllocateCropDialog
-        open={allocateOpen}
-        onOpenChange={setAllocateOpen}
-        farmerId={selectedFarmerId}
-        onAllocate={() => {
-          // reload farmer state from localStorage
-          const farmers = getAllFarmers();
-          setRegisteredFarmers(farmers);
-        }}
-      />
     </div>
   );
 };
