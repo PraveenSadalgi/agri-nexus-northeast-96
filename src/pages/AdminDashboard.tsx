@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Farmer } from "@/types/admin";
@@ -8,6 +7,115 @@ import DeallocateCropDialog from "@/components/admin/DeallocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { MapPin, Truck, Users, Check, X, WheatOff, Leaf, Tractor, MessageSquare } from "lucide-react";
 
+const DEMO_TRANSPORT_REQUESTS = [
+  {
+    id: "TR1001",
+    farmerId: "F1001",
+    farmer: "Rajesh Kumar",
+    cropId: "C1001",
+    cropName: "Rice",
+    status: "pending",
+    requestDate: new Date().toISOString(),
+    destination: "Chennai Market"
+  },
+  {
+    id: "TR1002",
+    farmerId: "F1002",
+    farmer: "Anand Singh",
+    cropId: "C1002",
+    cropName: "Wheat",
+    status: "approved",
+    requestDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    destination: "Delhi Warehouse"
+  },
+  {
+    id: "TR1003",
+    farmerId: "F1003",
+    farmer: "Lakshmi Devi",
+    cropId: "C1003",
+    cropName: "Cotton",
+    status: "pending",
+    requestDate: new Date().toISOString(),
+    destination: "Mumbai Export Terminal"
+  }
+];
+
+const DEMO_ACCESS_LOGS = [
+  {
+    id: "AL1001",
+    userId: "F1001",
+    userName: "Rajesh Kumar",
+    action: "Logged In",
+    timestamp: new Date().toISOString()
+  },
+  {
+    id: "AL1002",
+    userId: "F1002",
+    userName: "Anand Singh",
+    action: "Updated Profile",
+    timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString()
+  },
+  {
+    id: "AL1003",
+    userId: "A1001",
+    userName: "Admin User",
+    action: "Approved Transport Request",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+const DEMO_FARMERS: Farmer[] = [
+  {
+    id: "F1001",
+    name: "Rajesh Kumar",
+    territory: "Tamil Nadu",
+    allocatedCrops: [
+      {
+        cropId: "C1001",
+        cropName: "Rice",
+        harvestLocation: "Thanjavur",
+        transportDestination: "Chennai",
+        price: 2500
+      }
+    ]
+  },
+  {
+    id: "F1002",
+    name: "Anand Singh",
+    territory: "Punjab",
+    allocatedCrops: [
+      {
+        cropId: "C1002",
+        cropName: "Wheat",
+        harvestLocation: "Amritsar",
+        transportDestination: "Delhi",
+        price: 1800
+      }
+    ]
+  },
+  {
+    id: "F1003",
+    name: "Lakshmi Devi",
+    territory: "Maharashtra",
+    allocatedCrops: [
+      {
+        cropId: "C1003",
+        cropName: "Cotton",
+        harvestLocation: "Nagpur",
+        transportDestination: "Mumbai",
+        price: 3200
+      },
+      {
+        cropId: "C1004",
+        cropName: "Soybeans",
+        harvestLocation: "Pune",
+        transportDestination: "Mumbai",
+        price: 2800
+      }
+    ]
+  }
+];
+
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState<
     Array<{ id: string; desc: string; farmer: string; date: string; status: string }>
@@ -16,147 +124,32 @@ const AdminDashboard = () => {
   const [selectedFarmerId, setSelectedFarmerId] = useState<string | null>(null);
   const [allocateDialogOpen, setAllocateDialogOpen] = useState(false);
   const [deallocateDialogOpen, setDeallocateDialogOpen] = useState(false);
-  const [transportRequests, setTransportRequests] = useState<
-    Array<{ id: string; farmerId: string; farmer: string; cropId: string; cropName: string; status: string; requestDate: string; destination: string }>
-  >([]);
-  const [accessLogs, setAccessLogs] = useState<
-    Array<{ id: string; userId: string; userName: string; action: string; timestamp: string }>
-  >([]);
-
-  // Generate some demo transport requests
-  useEffect(() => {
-    const demoRequests = [
-      {
-        id: "TR1001",
-        farmerId: "F1001",
-        farmer: "Rajesh Kumar",
-        cropId: "C1001",
-        cropName: "Rice",
-        status: "pending",
-        requestDate: new Date().toISOString(),
-        destination: "Chennai Market"
-      },
-      {
-        id: "TR1002",
-        farmerId: "F1002",
-        farmer: "Anand Singh",
-        cropId: "C1002",
-        cropName: "Wheat",
-        status: "approved",
-        requestDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        destination: "Delhi Warehouse"
-      },
-      {
-        id: "TR1003",
-        farmerId: "F1003",
-        farmer: "Lakshmi Devi",
-        cropId: "C1003",
-        cropName: "Cotton",
-        status: "pending",
-        requestDate: new Date().toISOString(),
-        destination: "Mumbai Export Terminal"
-      }
-    ];
-    setTransportRequests(demoRequests);
-    
-    // Generate demo access logs
-    const demoLogs = [
-      {
-        id: "AL1001",
-        userId: "F1001",
-        userName: "Rajesh Kumar",
-        action: "Logged In",
-        timestamp: new Date().toISOString()
-      },
-      {
-        id: "AL1002",
-        userId: "F1002",
-        userName: "Anand Singh",
-        action: "Updated Profile",
-        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString()
-      },
-      {
-        id: "AL1003",
-        userId: "A1001",
-        userName: "Admin User",
-        action: "Approved Transport Request",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-      }
-    ];
-    setAccessLogs(demoLogs);
-  }, []);
+  const [transportRequests, setTransportRequests] = useState(DEMO_TRANSPORT_REQUESTS);
+  const [accessLogs, setAccessLogs] = useState(DEMO_ACCESS_LOGS);
 
   useEffect(() => {
-    // Retrieve query tickets from localStorage
     const ticketList = window.localStorage.getItem("queryTickets");
     if (ticketList) {
       setTickets(JSON.parse(ticketList));
     }
     
-    // Load farmers data
-    const loadFarmers = () => {
-      // Demo data for farmers
-      const demoFarmers: Farmer[] = [
-        {
-          id: "F1001",
-          name: "Rajesh Kumar",
-          territory: "Tamil Nadu",
-          allocatedCrops: [
-            {
-              cropId: "C1001",
-              cropName: "Rice",
-              harvestLocation: "Thanjavur",
-              transportDestination: "Chennai",
-              price: 2500
-            }
-          ]
-        },
-        {
-          id: "F1002",
-          name: "Anand Singh",
-          territory: "Punjab",
-          allocatedCrops: [
-            {
-              cropId: "C1002",
-              cropName: "Wheat",
-              harvestLocation: "Amritsar",
-              transportDestination: "Delhi",
-              price: 1800
-            }
-          ]
-        },
-        {
-          id: "F1003",
-          name: "Lakshmi Devi",
-          territory: "Maharashtra",
-          allocatedCrops: [
-            {
-              cropId: "C1003",
-              cropName: "Cotton",
-              harvestLocation: "Nagpur",
-              transportDestination: "Mumbai",
-              price: 3200
-            },
-            {
-              cropId: "C1004",
-              cropName: "Soybeans",
-              harvestLocation: "Pune",
-              transportDestination: "Mumbai",
-              price: 2800
-            }
-          ]
+    const initializeFarmers = () => {
+      let hasStoredFarmers = false;
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('F')) {
+          hasStoredFarmers = true;
+          break;
         }
-      ];
-
-      // Store farmers in local storage
-      demoFarmers.forEach(farmer => {
-        const existingFarmer = window.localStorage.getItem(farmer.id);
-        if (!existingFarmer) {
+      }
+      
+      if (!hasStoredFarmers) {
+        DEMO_FARMERS.forEach(farmer => {
           window.localStorage.setItem(farmer.id, JSON.stringify(farmer));
-        }
-      });
-
-      // Get all farmers from localStorage
+        });
+      }
+      
       const storedFarmers: Farmer[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -173,10 +166,10 @@ const AdminDashboard = () => {
         }
       }
       
-      setFarmers(storedFarmers.length ? storedFarmers : demoFarmers);
+      setFarmers(storedFarmers.length > 0 ? storedFarmers : DEMO_FARMERS);
     };
     
-    loadFarmers();
+    initializeFarmers();
   }, []);
 
   const handleAllocateClick = (farmerId: string) => {
@@ -190,7 +183,6 @@ const AdminDashboard = () => {
   };
 
   const handleAfterAllocate = () => {
-    // Refresh farmers data
     const updatedFarmers = [...farmers];
     if (selectedFarmerId) {
       const farmerJSON = window.localStorage.getItem(selectedFarmerId);
@@ -206,7 +198,6 @@ const AdminDashboard = () => {
   };
 
   const handleAfterDeallocate = () => {
-    // Same refresh logic as allocation
     handleAfterAllocate();
   };
 
