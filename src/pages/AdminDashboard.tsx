@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import DeallocateCropDialog from "@/components/admin/DeallocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { MapPin, Truck, Users, Check, X, WheatOff, Leaf, Farm, MessageSquare } from "lucide-react";
+import { MapPin, Truck, Users, Check, X, WheatOff, Leaf, Tractor, MessageSquare } from "lucide-react";
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState<
@@ -233,9 +233,9 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-emerald-50 p-4">
       <div className="container mx-auto">
-        <div className="bg-green-800 text-white p-6 rounded-lg shadow-lg mb-6">
+        <div className="bg-gradient-to-r from-green-800 to-emerald-700 text-white p-6 rounded-lg shadow-lg mb-6">
           <div className="flex items-center mb-2">
-            <Farm className="h-8 w-8 mr-3" />
+            <Tractor className="h-8 w-8 mr-3" />
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           </div>
           <p className="text-green-100">Manage farmers, track crops, and oversee agricultural operations</p>

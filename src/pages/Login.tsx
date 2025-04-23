@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { LogIn, User, Building, UserRound, ArrowLeft, Farm, Tractor, Wheat } from "lucide-react";
+import { LogIn, User, Building, UserRound, ArrowLeft, Tractor, Wheat } from "lucide-react";
 
 type UserRole = "farmer" | "admin" | "buyer";
 
@@ -104,7 +103,7 @@ const Login = () => {
         <Card className="w-full border-green-200 shadow-lg">
           <CardHeader className="text-center space-y-2 bg-gradient-to-b from-green-50 to-emerald-100 rounded-t-lg">
             <div className="mx-auto bg-green-100 p-3 rounded-full border-2 border-green-200">
-              <Farm className="h-6 w-6 text-emerald-600" />
+              <Tractor className="h-6 w-6 text-emerald-600" />
             </div>
             <h2 className="text-2xl font-semibold text-green-800">Welcome to AgriBridge NE</h2>
             <p className="text-gray-600 text-sm">Sign in to access your agricultural dashboard</p>

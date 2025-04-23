@@ -4,13 +4,13 @@ import FarmerImageUpload from "@/components/farming/FarmerImageUpload";
 import FarmerQueryTicket from "@/components/farming/FarmerQueryTicket";
 import CropInformation from "@/components/farming/CropInformation";
 import NewsFeed from "@/components/farming/NewsFeed";
-import { Tractor, Leaf, CloudSun, MessageSquare, Camera } from "lucide-react";
+import { Tractor, Leaf, CloudSun, MessageSquare, Camera, Newspaper } from "lucide-react";
 
 const FarmerDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-emerald-50 py-6">
-      <div className="container mx-auto">
-        <div className="bg-green-800 text-white p-6 rounded-lg shadow-lg mb-6">
+      <div className="container mx-auto px-4">
+        <div className="bg-gradient-to-r from-green-800 to-green-700 text-white p-6 rounded-lg shadow-lg mb-6">
           <div className="flex items-center mb-4">
             <Tractor className="h-8 w-8 mr-3" />
             <h1 className="text-3xl font-bold">Farmer Dashboard</h1>
@@ -28,7 +28,7 @@ const FarmerDashboard = () => {
           </div>
           <div className="md:col-span-1">
             <div className="flex items-center mb-3">
-              <Leaf className="h-5 w-5 mr-2 text-emerald-600" />
+              <Newspaper className="h-5 w-5 mr-2 text-emerald-600" />
               <h2 className="text-xl font-semibold text-green-800">News Feed</h2>
             </div>
             <NewsFeed />
@@ -61,11 +61,14 @@ const FarmerDashboard = () => {
         </div>
         
         {/* Simulated Admin Query View - for demo purposes */}
-        <div className="mt-6 bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h2 className="text-xl font-semibold mb-4 text-green-800">Your Raised Queries (Admin View)</h2>
-          <ul className="list-disc pl-6 space-y-2 text-gray-700">
+        <div className="mt-6 bg-gradient-to-br from-white to-green-50 p-6 rounded-lg shadow border border-green-100">
+          <h2 className="text-xl font-semibold mb-4 text-green-800 flex items-center">
+            <MessageSquare className="h-5 w-5 mr-2 text-emerald-600" />
+            Your Raised Queries (Admin View)
+          </h2>
+          <ul className="list-disc pl-6 space-y-2 text-gray-700 max-h-[200px] overflow-y-auto">
             {(JSON.parse(window.localStorage.getItem("farmer_queries_demo") || "[]") as string[]).reverse().map((q, idx) => (
-              <li key={idx} className="py-1">{q}</li>
+              <li key={idx} className="py-1 border-b border-green-100 last:border-b-0">{q}</li>
             ))}
           </ul>
           {(JSON.parse(window.localStorage.getItem("farmer_queries_demo") || "[]") as string[]).length === 0 && (
