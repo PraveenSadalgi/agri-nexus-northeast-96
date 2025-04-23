@@ -7,7 +7,12 @@ import NewsFeed from "@/components/farming/NewsFeed";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Home, TrendingUp, Leaf } from "lucide-react";
+import { 
+  LogOut, 
+  Home, 
+  TrendingUp, 
+  Leaf 
+} from "lucide-react";  // Explicitly import all used icons
 import { CropAllocation } from "@/types/admin";
 
 const FarmerDashboard = () => {

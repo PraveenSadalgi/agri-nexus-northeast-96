@@ -1,10 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Farmer } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { MapPin, Truck, Users, Check, X } from "lucide-react";
+import { 
+  MapPin, 
+  Truck, 
+  Users, 
+  Check, 
+  X, 
+  LogOut, 
+  Home, 
+  TrendingUp, 
+  Leaf 
+} from "lucide-react";  // Explicitly import all used icons
 import { toast } from "sonner";
 
 interface QueryTicket {

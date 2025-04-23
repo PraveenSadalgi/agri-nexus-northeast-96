@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { HelpCircle, Send, Copy } from "lucide-react";
+import { 
+  HelpCircle, 
+  Send, 
+  Copy 
+} from "lucide-react";  // Explicitly import all used icons
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
