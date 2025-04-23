@@ -1,34 +1,16 @@
-import React, { useEffect, useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
 import { Farmer } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import AllocateCropDialog from "@/components/admin/AllocateCropDialog";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { 
-  MapPin, 
-  Truck, 
-  Users, 
-  Check, 
-  X, 
-  LogOut, 
-  Home, 
-  TrendingUp, 
-  Leaf 
-} from "lucide-react";
-import { toast } from "sonner";
-
-interface QueryTicket {
-  id: string;
-  desc: string;
-  farmer: string;
-  farmerId?: string;
-  territory?: string;
-  date: string;
-  status: string;
-}
+import { MapPin, TruckFront, Users, Check, X } from "lucide-react";
 
 const AdminDashboard = () => {
-  const [tickets, setTickets] = useState<QueryTicket[]>([]);
+  const [tickets, setTickets] = useState<
+    Array<{ id: string; desc: string; farmer: string; date: string; status: string }>
+  >([]);
   const [farmers, setFarmers] = useState<Farmer[]>([]);
   const [selectedFarmerId, setSelectedFarmerId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -39,6 +21,7 @@ const AdminDashboard = () => {
     Array<{ id: string; userId: string; userName: string; action: string; timestamp: string }>
   >([]);
 
+  // Generate some demo transport requests
   useEffect(() => {
     const demoRequests = [
       {
@@ -74,6 +57,7 @@ const AdminDashboard = () => {
     ];
     setTransportRequests(demoRequests);
     
+    // Generate demo access logs
     const demoLogs = [
       {
         id: "AL1001",
@@ -101,12 +85,76 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
+    // Retrieve query tickets from localStorage
     const ticketList = window.localStorage.getItem("queryTickets");
     if (ticketList) {
       setTickets(JSON.parse(ticketList));
     }
     
+    // Load farmers data
     const loadFarmers = () => {
+      // Demo data for farmers
+      const demoFarmers: Farmer[] = [
+        {
+          id: "F1001",
+          name: "Rajesh Kumar",
+          territory: "Tamil Nadu",
+          allocatedCrops: [
+            {
+              cropId: "C1001",
+              cropName: "Rice",
+              harvestLocation: "Thanjavur",
+              transportDestination: "Chennai",
+              price: 2500
+            }
+          ]
+        },
+        {
+          id: "F1002",
+          name: "Anand Singh",
+          territory: "Punjab",
+          allocatedCrops: [
+            {
+              cropId: "C1002",
+              cropName: "Wheat",
+              harvestLocation: "Amritsar",
+              transportDestination: "Delhi",
+              price: 1800
+            }
+          ]
+        },
+        {
+          id: "F1003",
+          name: "Lakshmi Devi",
+          territory: "Maharashtra",
+          allocatedCrops: [
+            {
+              cropId: "C1003",
+              cropName: "Cotton",
+              harvestLocation: "Nagpur",
+              transportDestination: "Mumbai",
+              price: 3200
+            },
+            {
+              cropId: "C1004",
+              cropName: "Soybeans",
+              harvestLocation: "Pune",
+              transportDestination: "Mumbai",
+              price: 2800
+            }
+          ]
+        }
+      ];
+
+      // Store farmers in local storage
+      demoFarmers.forEach(farmer => {
+        const existingFarmer = window.localStorage.getItem(farmer.id);
+        if (!existingFarmer) {
+          window.localStorage.setItem(farmer.id, JSON.stringify(farmer));
+        }
+      });
+
+      // Get all farmers from localStorage
       const storedFarmers: Farmer[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -122,34 +170,11 @@ const AdminDashboard = () => {
           }
         }
       }
-      setFarmers(storedFarmers);
+      
+      setFarmers(storedFarmers.length ? storedFarmers : demoFarmers);
     };
     
     loadFarmers();
-    
-    window.addEventListener('storage', loadFarmers);
-    
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === "queryTickets") {
-        const updatedTickets = event.newValue ? JSON.parse(event.newValue) : [];
-        setTickets(updatedTickets);
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    const interval = setInterval(() => {
-      const ticketList = window.localStorage.getItem("queryTickets");
-      if (ticketList) {
-        setTickets(JSON.parse(ticketList));
-      }
-    }, 5000);
-    
-    return () => {
-      window.removeEventListener('storage', loadFarmers);
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
   }, []);
 
   const handleAllocateClick = (farmerId: string) => {
@@ -158,6 +183,7 @@ const AdminDashboard = () => {
   };
 
   const handleAfterAllocate = () => {
+    // Refresh farmers data
     const updatedFarmers = [...farmers];
     if (selectedFarmerId) {
       const farmerJSON = window.localStorage.getItem(selectedFarmerId);
@@ -176,21 +202,6 @@ const AdminDashboard = () => {
     setTransportRequests(prev => prev.map(req => 
       req.id === id ? { ...req, status } : req
     ));
-  };
-
-  const handleDeallocateCrop = (farmerId: string, cropId: string) => {
-    const farmerJSON = window.localStorage.getItem(farmerId);
-    if (farmerJSON) {
-      const farmer = JSON.parse(farmerJSON);
-      farmer.allocatedCrops = farmer.allocatedCrops.filter((crop: any) => crop.cropId !== cropId);
-      window.localStorage.setItem(farmerId, JSON.stringify(farmer));
-      
-      setFarmers(prev => prev.map(f => 
-        f.id === farmerId ? farmer : f
-      ));
-      
-      toast.success("Crop deallocated successfully");
-    }
   };
 
   return (
@@ -257,18 +268,8 @@ const AdminDashboard = () => {
                       <p className="font-medium mb-1">Allocated Crops:</p>
                       <ul className="list-disc pl-5 space-y-1">
                         {farmer.allocatedCrops.map(crop => (
-                          <li key={crop.cropId} className="flex items-center justify-between">
-                            <span>
-                              {crop.cropName} - {crop.harvestLocation} → {crop.transportDestination} (₹{crop.price}/kg)
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-red-600 hover:text-red-700"
-                              onClick={() => handleDeallocateCrop(farmer.id, crop.cropId)}
-                            >
-                              Deallocate
-                            </Button>
+                          <li key={crop.cropId}>
+                            {crop.cropName} - {crop.harvestLocation} → {crop.transportDestination} (₹{crop.price}/kg)
                           </li>
                         ))}
                       </ul>
@@ -285,7 +286,7 @@ const AdminDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Truck className="mr-2" /> 
+              <TruckFront className="mr-2" /> 
               Approve Transport and Monitor Access
             </CardTitle>
           </CardHeader>
@@ -369,50 +370,22 @@ const AdminDashboard = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle>Query Tickets</CardTitle>
+            <CardTitle>New Query Tickets</CardTitle>
           </CardHeader>
           <CardContent>
             {tickets.length === 0 && <p className="text-gray-600">No query tickets yet.</p>}
             {tickets.length > 0 &&
               <div className="space-y-4">
-                {tickets.slice().reverse().map(ticket => (
-                  <div key={ticket.id} className="border rounded p-3 bg-white shadow-sm">
-                    <div className="text-sm space-y-2">
-                      <div className="flex justify-between items-start">
-                        <div className="space-y-1">
-                          <p className="text-gray-900">
-                            <span className="font-semibold">Ticket ID:</span> {ticket.id}
-                          </p>
-                          <p className="text-gray-900">
-                            <span className="font-semibold">Farmer:</span> {ticket.farmer}
-                          </p>
-                          <p className="text-gray-900">
-                            <span className="font-semibold">Farmer ID:</span> {ticket.farmerId}
-                          </p>
-                          <p className="text-gray-900">
-                            <span className="font-semibold">Territory:</span> {ticket.territory}
-                          </p>
-                          <p className="text-gray-900">
-                            <span className="font-semibold">Date:</span>{' '}
-                            {new Date(ticket.date).toLocaleString()}
-                          </p>
-                          <p className="text-gray-900">
-                            <span className="font-semibold">Status:</span>{' '}
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${
-                              ticket.status === 'open' 
-                                ? 'bg-yellow-100 text-yellow-800' 
-                                : 'bg-green-100 text-green-800'
-                            }`}>
-                              {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="mt-3 p-3 bg-gray-50 rounded-md">
-                        <p className="font-medium text-gray-900 mb-1">Query:</p>
-                        <p className="text-gray-700">{ticket.desc}</p>
-                      </div>
+                {tickets.map(ticket => (
+                  <div key={ticket.id} className="border rounded p-2">
+                    <div className="text-sm text-gray-500">
+                      <span>Date: {new Date(ticket.date).toLocaleString()}</span>
+                      {" · "}
+                      <span>Farmer: <span className="font-semibold">{ticket.farmer}</span></span>
+                      {" · "}
+                      <span>Status: <span className="capitalize">{ticket.status}</span></span>
                     </div>
+                    <div className="mt-1 font-medium">{ticket.desc}</div>
                   </div>
                 ))}
               </div>

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 
 interface AllocateCropDialogProps {
   open: boolean;
@@ -49,13 +48,8 @@ const AllocateCropDialog: React.FC<AllocateCropDialogProps> = ({
       ? [...farmer.allocatedCrops, newCrop]
       : [newCrop];
     window.localStorage.setItem(farmerId, JSON.stringify(farmer));
-    
-    // Dispatch an event to notify other components
-    document.dispatchEvent(new Event('allocatedCropsUpdated'));
-    
     setCrop(initialCrop);
     setSaving(false);
-    toast.success(`Crop allocated successfully to farmer ${farmerId}`);
     onOpenChange(false);
     onAllocate();
   };

@@ -1,65 +1,50 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Newspaper, ExternalLink } from "lucide-react";
+import { Newspaper } from "lucide-react";
 
 interface NewsItem {
   title: string;
   summary: string;
   date: string;
-  link?: string;
 }
 
 const NewsFeed = () => {
   const [news, setNews] = useState<NewsItem[]>([
     {
-      title: "Sustainable Farming Practices Gain Traction",
-      summary: "New techniques for eco-friendly agriculture gaining traction among farmers in Northeast India.",
-      date: "2025-04-22",
-      link: "#"
+      title: "Sustainable Farming Practices",
+      summary: "New techniques for eco-friendly agriculture gaining traction among farmers.",
+      date: "2025-04-22"
     },
     {
-      title: "Weather-Resistant Crops Development",
-      summary: "Research reveals promising developments in climate-adaptive farming for the region's unpredictable weather.",
-      date: "2025-04-21",
-      link: "#"
+      title: "Weather-Resistant Crops",
+      summary: "Research reveals promising developments in climate-adaptive farming.",
+      date: "2025-04-21"
     },
     {
-      title: "Agricultural Market Trends 2025",
-      summary: "Latest market analysis shows increasing demand for organic produce from Northeast states.",
-      date: "2025-04-20",
-      link: "#"
-    },
-    {
-      title: "Government Announces New Farmer Benefits",
-      summary: "Ministry of Agriculture releases new incentives for small-scale farmers in Northeast region.",
-      date: "2025-04-18",
-      link: "#"
+      title: "Agricultural Market Trends",
+      summary: "Latest market analysis shows increasing demand for organic produce.",
+      date: "2025-04-20"
     }
   ]);
 
   return (
-    <Card className="h-full border-agri-200">
-      <CardHeader className="bg-agri-600 text-white py-3 px-4">
-        <CardTitle className="text-md flex items-center">
-          <Newspaper className="h-4 w-4 mr-2" />
-          Agricultural News
+    <Card className="h-full">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-md font-medium">
+          <div className="flex items-center gap-2">
+            <Newspaper className="h-4 w-4" />
+            Farming News
+          </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y divide-gray-100">
+      <CardContent>
+        <div className="space-y-4">
           {news.map((item, index) => (
-            <div key={index} className="p-4 hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-agri-700">{item.title}</h3>
-              <p className="text-sm text-gray-600 mt-1">{item.summary}</p>
-              <div className="mt-2 flex justify-between items-center">
-                <span className="text-xs text-gray-500">{item.date}</span>
-                {item.link && (
-                  <a href={item.link} className="text-xs text-agri-600 hover:text-agri-700 flex items-center">
-                    Read more <ExternalLink className="h-3 w-3 ml-1" />
-                  </a>
-                )}
-              </div>
+            <div key={index} className="border-b pb-3 last:border-0">
+              <h3 className="font-medium text-sm">{item.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1">{item.summary}</p>
+              <span className="text-xs text-gray-500 mt-1 block">{item.date}</span>
             </div>
           ))}
         </div>
